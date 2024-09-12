@@ -6,6 +6,8 @@ import (
 	"net"
 	"os"
 	"time"
+
+	"github.com/VarunDTU/redis-in-go/resp"
 )
 const (HOST="localhost";PORT="5001";TYPE="tcp")
 func main() {
@@ -27,6 +29,10 @@ func main() {
 }
 
 func handleRequest(conn net.Conn){
+	
+}
+
+func read(conn net.Conn){
 	buffer:=make([]byte,1024);
 	_,err:=conn.Read(buffer);
 	if(err!=nil){
@@ -35,8 +41,14 @@ func handleRequest(conn net.Conn){
 	}
 	time :=time.Now().Format(time.ANSIC);
 	responeStr:=fmt.Sprintf("time: %v ,message: %v",time,string(buffer[:]));
-	println(responeStr)
-	conn.Write([]byte(responeStr));
-	conn.Close();
+
+	responseResp,_:=resp.RespFromBytes([]byte(responeStr));
+
+
+
+
+	conn.Write([]byte(responseResp));
+
+	defer conn.Close();
 }
 
